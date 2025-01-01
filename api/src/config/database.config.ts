@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
+
 export const getDatabaseConfig = (): DataSourceOptions => ({
   type: 'mysql',
   host: process.env.MYSQL_HOST,
@@ -19,10 +20,10 @@ export const databaseProviders = [
       try {
         const dataSource = new DataSource(getDatabaseConfig());
         const connection = await dataSource.initialize();
-        console.log('Database connection established');
+        // console.log('Database connection established');
         return connection;
       } catch (error) {
-        console.error('Database connection failed:', error);
+        // console.error('Database connection failed:', error);
         throw error;
       }
     },
