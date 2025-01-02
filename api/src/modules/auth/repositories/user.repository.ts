@@ -3,7 +3,6 @@ import { IUserRepository } from "./user.repository.interface";
 import { User } from "../entities/user.entity";
 import { DataSource, Repository } from "typeorm";
 
-
 @Injectable()
 export class UserRepositoy implements IUserRepository {
     private repository: Repository<User>;

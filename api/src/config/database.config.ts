@@ -1,6 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-
 export const getDatabaseConfig = (): DataSourceOptions => ({
   type: 'mysql',
   host: process.env.MYSQL_HOST,
@@ -10,7 +9,7 @@ export const getDatabaseConfig = (): DataSourceOptions => ({
   database: process.env.MYSQL_DATABASE,
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: process.env.NODE_ENV !== 'production',
-  logging: process.env.NODE_ENV === 'development',
+  logging: process.env.NODE_ENV === 'production',
 });
 
 export const databaseProviders = [
@@ -20,10 +19,10 @@ export const databaseProviders = [
       try {
         const dataSource = new DataSource(getDatabaseConfig());
         const connection = await dataSource.initialize();
-        // console.log('Database connection established');
+        console.log('Database connection established');
         return connection;
       } catch (error) {
-        // console.error('Database connection failed:', error);
+        console.error('Database connection failed:', error);
         throw error;
       }
     },

@@ -1,73 +1,136 @@
-import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
-import { IContactRepository } from './repository/contact.respository.interface';
-import { ContactDto } from './dto/contact.dto';
+import { Injectable, Inject, Logger } from '@nestjs/common';
+import { UpdateContactDto } from './dto/update-contact.dto';
 import { Contact } from './entities/contact.entity';
-
+import { IContactRepository } from './repository/contact.respository.interface';
+import { ContactExistsException } from 'src/common/exceptions/contact-exists.exception';
+import { CreateContactDto } from './dto/contact.dto';
+import { ContactNotFoundException } from 'src/common/exceptions/contact-not-found.exception';
 
 
 @Injectable()
 export class ContactService {
+    private readonly logger = new Logger(ContactService.name);
+
     constructor(
         @Inject('IContactRepository')
         private readonly contactRepository: IContactRepository,
     ) {}
 
-    async create(contactDto: ContactDto, userId: number): Promise<Contact> {
-        // Check if email already exists for this user
+    /**
+     * Creates a new contact
+     * @param createContactDto The contact data
+     * @param userId The ID of the user creating the contact
+     * @returns The created contact
+     * @throws ContactExistsException if a contact with the same email exists
+     */
+    async create(createContactDto: CreateContactDto, userId: number): Promise<Contact> {
+        this.logger.log(`Creating contact for user ${userId}`);
+        
         const existingContact = await this.contactRepository.findByEmail(
-            contactDto.email,
+            createContactDto.email,
             userId
         );
 
         if (existingContact) {
-            throw new ConflictException('Contact with this email already exists');
+            this.logger.warn(`Contact with email ${createContactDto.email} already exists for user ${userId}`);
+            throw new ContactExistsException(createContactDto.email);
         }
 
-        return await this.contactRepository.create({
-            ...contactDto,
+        const contact = await this.contactRepository.create({
+            ...createContactDto,
             userId
         });
+
+        this.logger.log(`Created contact ${contact.id} for user ${userId}`);
+        return contact;
     }
 
+    /**
+     * Retrieves all contacts for a user
+     * @param userId The ID of the user
+     * @returns Array of contacts
+     */
     async findAll(userId: number): Promise<Contact[]> {
+        this.logger.log(`Retrieving all contacts for user ${userId}`);
         return await this.contactRepository.findByUserId(userId);
     }
 
+    /**
+     * Finds a specific contact
+     * @param id The contact ID
+     * @param userId The user ID
+     * @returns The found contact
+     * @throws ContactNotFoundException if contact is not found
+     */
     async findOne(id: number, userId: number): Promise<Contact> {
+        this.logger.log(`Finding contact ${id} for user ${userId}`);
+        
         const contact = await this.contactRepository.findById(id);
 
         if (!contact || contact.userId !== userId) {
-            throw new NotFoundException('Contact not found');
+            this.logger.warn(`Contact ${id} not found for user ${userId}`);
+            throw new ContactNotFoundException(id);
         }
 
         return contact;
     }
 
-    async update(id: number, userId: number, contactDto: ContactDto): Promise<Contact> {
-        // Check if contact exists and belongs to user
+    /**
+     * Updates a contact
+     * @param id The contact ID
+     * @param userId The user ID
+     * @param updateContactDto The update data
+     * @returns The updated contact
+     * @throws ContactNotFoundException if contact is not found
+     * @throws ContactExistsException if updating to an email that exists
+     */
+    async update(
+        id: number, 
+        userId: number, 
+        updateContactDto: UpdateContactDto
+    ): Promise<Contact> {
+        this.logger.log(`Updating contact ${id} for user ${userId}`);
+
+        // Verify ownership
         await this.findOne(id, userId);
 
-        // If email is being updated, check for duplicates
-        if (contactDto.email) {
+        // Check email uniqueness if email is being updated
+        if (updateContactDto.email) {
             const existingContact = await this.contactRepository.findByEmail(
-                contactDto.email,
+                updateContactDto.email,
                 userId
             );
 
             if (existingContact && existingContact.id !== id) {
-                throw new ConflictException('Contact with this email already exists');
+                this.logger.warn(
+                    `Cannot update contact ${id}: email ${updateContactDto.email} already exists`
+                );
+                throw new ContactExistsException(updateContactDto.email);
             }
         }
 
-        return await this.contactRepository.update(id, {
-            ...contactDto,
+        const updatedContact = await this.contactRepository.update(id, {
+            ...updateContactDto,
             userId
         });
+
+        this.logger.log(`Updated contact ${id} for user ${userId}`);
+        return updatedContact;
     }
 
+    /**
+     * Removes a contact
+     * @param id The contact ID
+     * @param userId The user ID
+     * @throws ContactNotFoundException if contact is not found
+     */
     async remove(id: number, userId: number): Promise<void> {
-        // Check if contact exists and belongs to user
+        this.logger.log(`Removing contact ${id} for user ${userId}`);
+        
+        // Verify ownership
         await this.findOne(id, userId);
+        
         await this.contactRepository.delete(id);
+        this.logger.log(`Removed contact ${id}`);
     }
 }
