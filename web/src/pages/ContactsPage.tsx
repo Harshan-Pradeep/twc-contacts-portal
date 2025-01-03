@@ -1,259 +1,125 @@
-// src/pages/ContactsPage.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../lib/axios';
-
-interface Contact {
-  id: number;
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  gender: string;
-  userId: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ContactsResponse {
-  data: Contact[];
-  metadata: {
-    timestamp: string;
-    path: string;
-    statusCode: number;
-  };
-}
+import Button from '../components/common/Button';
+import ContactsTable from '../components/contacts/ContactsTable';
+import { useContactsPage } from '../hooks/useContactsPage';
+import Logo from '../assets/secondaryLogo.png';
+import { useAuth } from '../hooks/useAuth';
+import LogoutIcon from '../assets/bx_log-out-circle.svg';
 
 const ContactsPage = () => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editedContact, setEditedContact] = useState<Contact | null>(null);
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+    
+    const {
+        contacts,
+        isLoading,
+        error,
+        editingId,
+        editedContact,
+        handleEdit,
+        handleSave,
+        handleCancel,
+        handleDelete,
+        handleInputChange,
+    } = useContactsPage();
 
-  // Fetch contacts
-  const { data: response, isLoading, error } = useQuery<ContactsResponse>({
-    queryKey: ['contacts'],
-    queryFn: () => api.get('/contacts').then((res) => res.data),
-  });
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
-  // Update contact mutation
-  const updateContact = useMutation({
-    mutationFn: (data: Partial<Contact>) => {
-      // Extract only the fields we want to send to backend
-      const { fullName, email, phoneNumber, gender } = data;
-      return api.put(`/contacts/${data.id}`, {
-        fullName,
-        email,
-        phoneNumber,
-        gender
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      setEditingId(null);
-      setEditedContact(null);
-    },
-  });
-
-  // Delete contact mutation
-  const deleteContact = useMutation({
-    mutationFn: (id: number) => api.delete(`/contacts/${id}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-    },
-  });
-
-  const handleEdit = (contact: Contact) => {
-    setEditingId(contact.id);
-    setEditedContact(contact);
-  };
-
-  const handleSave = async () => {
-    if (editedContact) {
-      try {
-        await updateContact.mutateAsync(editedContact);
-      } catch (error) {
-        console.error('Error updating contact:', error);
-      }
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
+                <div className="text-xl">Loading contacts...</div>
+            </div>
+        );
     }
-  };
 
-  const handleCancel = () => {
-    setEditingId(null);
-    setEditedContact(null);
-  };
-
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this contact?')) {
-      try {
-        await deleteContact.mutateAsync(id);
-      } catch (error) {
-        console.error('Error deleting contact:', error);
-      }
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
+                <div className="text-xl text-red-600">Error loading contacts</div>
+            </div>
+        );
     }
-  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: keyof Contact) => {
-    if (editedContact) {
-      setEditedContact({
-        ...editedContact,
-        [field]: e.target.value,
-      });
-    }
-  };
+    return (
+        // <main className="background_home min-h-screen overflow-hidden">
+        //     <img src={Logo} className="w-[138px] h-[91px] mt-[72px] ml-[204px]" />
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+        //   <div className="max-w-7xl mx-auto">
+        //   <Button
+        //           onClick={() => navigate('/contacts/new')}
+        //           className="bg-indigo-600 text-white hover:bg-indigo-700"
+        //         >
+        //           Add New Contact
+        //         </Button>
+        //     <div className="bg-white rounded-lg shadow p-6">
+        //       <div className="flex justify-between items-center mb-6">
+        //       <h2 className="mb-6 lg:my-[23px] text-slate-50 md:text-5xl font-bold leading-8 font-FutuBold flex text-center items-center justify-center">
+        //             Contacts
+        //           </h2>
 
-  if (isLoading) {
-    return <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
-      <div className="text-xl">Loading contacts...</div>
-    </div>;
-  }
+        //       </div>
 
-  if (error) {
-    return <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
-      <div className="text-xl text-red-600">Error loading contacts</div>
-    </div>;
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Contacts</h2>
-            <button
-              onClick={() => navigate('/contacts/new')}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-            >
-              Add New Contact
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Full Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phone Number
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Gender
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created At
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {response?.data.map((contact: Contact) => (
-                  <tr key={contact.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === contact.id ? (
-                        <input
-                          type="text"
-                          value={editedContact?.fullName}
-                          onChange={(e) => handleInputChange(e, 'fullName')}
-                          className="w-full border rounded px-2 py-1"
-                        />
-                      ) : (
-                        contact.fullName
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === contact.id ? (
-                        <input
-                          type="email"
-                          value={editedContact?.email}
-                          onChange={(e) => handleInputChange(e, 'email')}
-                          className="w-full border rounded px-2 py-1"
-                        />
-                      ) : (
-                        contact.email
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === contact.id ? (
-                        <input
-                          type="text"
-                          value={editedContact?.phoneNumber}
-                          onChange={(e) => handleInputChange(e, 'phoneNumber')}
-                          className="w-full border rounded px-2 py-1"
-                        />
-                      ) : (
-                        contact.phoneNumber || '-'
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === contact.id ? (
-                        <select
-                          value={editedContact?.gender}
-                          onChange={(e) => handleInputChange(e, 'gender')}
-                          className="w-full border rounded px-2 py-1"
-                        >
-                          <option value="Male">Male</option>
-                          <option value="Female">Female</option>
-                        </select>
-                      ) : (
-                        contact.gender
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {formatDate(contact.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex space-x-4">
-                        {editingId === contact.id ? (
-                          <>
-                            <button
-                              onClick={handleSave}
-                              className="text-green-600 hover:text-green-900"
+        //       <ContactsTable
+        //         contacts={contacts}
+        //         editingId={editingId}
+        //         editedContact={editedContact}
+        //         onEdit={handleEdit}
+        //         onSave={handleSave}
+        //         onCancel={handleCancel}
+        //         onDelete={handleDelete}
+        //         onInputChange={handleInputChange}
+        //       />
+        //     </div>
+        //   </div>
+        // </main>
+        <main className="background_home min-h-screen flex flex-col">
+            <img src={Logo} className="w-[138px] h-[91px] mt-[72px] ml-[204px]"/>
+            <div className="grow flex-col px-[204px] flex justify-center">
+                <div className="flex gap-1 flex-col">
+                    <div className="mb-20 lg:mb-[23px] flex flex-col lg:flex-row justify-between h-16 items-center">
+                        <h2 className="mb-6 lg:my-[23px] text-slate-50 md:text-5xl font-bold leading-8 font-FutuBold flex text-center items-center justify-center">
+                            Contacts
+                        </h2>
+                        <h2>{user?.email}</h2>
+                        <div>
+                            <Button
+                                onClick={() => navigate('/contacts/new')}
+                                className="h-[50px] px-6 text-[25px] font-[400] leading-[50px] text-white bg-transparent hover:bg-transparent font-FutuLight rounded-full border border-white"
                             >
-                              Save
-                            </button>
-                            <button
-                              onClick={handleCancel}
-                              className="text-gray-600 hover:text-gray-900"
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => handleEdit(contact)}
-                            className="text-indigo-600 hover:text-indigo-900"
-                          >
-                            Edit
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(contact.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+                                add new contact
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="bg-white md:rounded-3xl w-full md:px-4 py-4 text-primary h-[45vh] overflow-y-auto">
+                        <ContactsTable
+                            contacts={contacts}
+                            editingId={editingId}
+                            editedContact={editedContact}
+                            onEdit={handleEdit}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                            onDelete={handleDelete}
+                            onInputChange={handleInputChange}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="absolute bottom-4 right-4">
+                <button onClick={handleLogout} className="flex items-center gap-5 px-4 py-2 text-white rounded">
+                    <img src={LogoutIcon} alt="Logout" />
+                    <span className="font-FutuBold text-[25px] font-[400] leading-[73px] underline">
+                        Logout
+                    </span>
+                </button>
+            </div>
+        </main>
+
+    );
 };
 
 export default ContactsPage;

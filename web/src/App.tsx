@@ -1,25 +1,16 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
-import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
-import AddContact from './pages/AddContact';
-import { useAuth } from './context/AuthContext';
-import ContactsPage from './pages/ContactsPage';
-import RegisterPage from './pages/RegisterPage';
+import { publicRoutes, protectedRoutes } from './config/routes';
 
-const queryClient = new QueryClient();
-
-// Protected Route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
-  
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  return <>{children}</>;
-};
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // disable automatic refetch on window focus
+      retry: 1, // retry failed queries once
+    },
+  },
+});
 
 function App() {
   return (
@@ -27,11 +18,23 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-            <Route path="/contacts" element={<ProtectedRoute><ContactsPage /></ProtectedRoute>} />
-            <Route path="/contacts/new" element={<ProtectedRoute><AddContact /></ProtectedRoute>} />
+            {/* Public Routes */}
+            {publicRoutes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element}
+              />
+            ))}
+
+            {/* Protected Routes */}
+            {protectedRoutes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element}
+              />
+            ))}
           </Routes>
         </BrowserRouter>
       </AuthProvider>
