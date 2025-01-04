@@ -16,6 +16,11 @@ export class Contact {
     email: string;
 
     @Column({
+        nullable: false
+    })
+    phoneNumber: string;
+    
+    @Column({
         type: 'enum',
         enum: Gender,
         default: Gender.MALE

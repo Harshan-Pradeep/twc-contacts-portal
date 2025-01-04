@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
 import { Gender } from 'src/common/enums/gender.enum';
 
 export class CreateContactDto {
@@ -21,6 +21,17 @@ export class CreateContactDto {
     @IsEmail({}, { message: 'Please provide a valid email' })
     email: string;
 
+    @ApiProperty({
+        example: '+1234567890',
+        description: 'Phone number of the contact',
+        minLength: 10,
+        maxLength: 15
+    })
+    @IsNotEmpty({ message: 'Phone number is required' })
+    @IsString({ message: 'Phone number must be a string' })
+    @Matches(/^\+?[0-9]{10,15}$/, { message: 'Phone number must be a valid international format' })
+    phoneNumber: string;
+    
     @ApiProperty({
         enum: Gender,
         example: Gender.MALE,
