@@ -15,5 +15,9 @@ export const authService = {
     api.post('/auth/logout'),
 
   getCurrentUser: () => 
-    api.get<User>('/auth/me')
+    api.get<User>('/auth/profile'),
+
+  googleLogin: () => {
+    window.location.href = `http://localhost:3003/auth/google`;
+  }
 };

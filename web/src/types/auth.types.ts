@@ -1,5 +1,6 @@
 export interface User {
     email: string;
+    isGoogleAccount?: boolean;
   }
   
   export interface LoginCredentials {
