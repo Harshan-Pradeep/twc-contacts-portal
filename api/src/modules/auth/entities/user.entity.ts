@@ -20,6 +20,12 @@ export class User {
     @IsNotEmpty({ message: 'Password is required' })
     password: string;
 
+    @Column({ nullable: true })
+    googleId?: string;
+
+    @Column({ default: false })
+    isGoogleAccount: boolean;
+    
     @CreateDateColumn({ type: 'timestamp' })
     createdDate: Date;
 
