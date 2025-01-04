@@ -24,6 +24,7 @@ import { CustomValidationPipe } from '../../common/pipes/validation.pipe';
 import { LoggingInterceptor } from '../../common/interceptors/logging.interceptor';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ResponseInterceptor } from 'src/common/interceptors/response.interceptor';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 /**
  * Controller handling authentication-related endpoints
@@ -125,6 +126,28 @@ export class AuthController {
     @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User not authenticated' })
     async getProfile(@Req() req) {
         this.logger.log(`Retrieving profile for user ID: ${req.user.id}`);
-        return this.authService.getUserProfile(req.user.id);
+        const user = await this.authService.getUserProfile(req.user.id);
+        return {
+            email: user.email,
+            isGoogleAccount: user.isGoogleAccount
+        };
     }
+
+    @Get('google')
+    @UseGuards(GoogleAuthGuard)
+    async googleAuth() { }
+
+    @Get('google/callback')
+@UseGuards(GoogleAuthGuard)
+async googleAuthCallback(@Req() req, @Res() res: Response) {
+    try {
+        const result = await this.authService.googleLogin(req.user);
+        this.cookieService.setToken(res, result.access_token);
+        
+        // Add fromGoogle parameter
+        return res.redirect(`${process.env.FRONTEND_URL}/login?fromGoogle=true`);
+    } catch (error) {
+        return res.redirect(`${process.env.FRONTEND_URL}/login?error=authentication_failed`);
+    }
+}
 }

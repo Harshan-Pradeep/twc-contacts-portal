@@ -9,11 +9,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import 'dotenv/config';
 import { CookieService } from './cookie.service';
+import { GoogleStrategy } from './strategies/google.strategy';
 
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '24h' }
@@ -27,7 +28,8 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
     AuthService,
     CookieService,
     JwtStrategy,
-    LocalStrategy
+    LocalStrategy,
+    GoogleStrategy
   ],
   controllers: [AuthController],
   exports: ['IUserRepository', AuthService]
