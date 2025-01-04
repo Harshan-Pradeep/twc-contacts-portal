@@ -75,4 +75,33 @@ export class AuthService {
         return result;
     }
 
+    async googleLogin(profile: any) {
+        if (!profile || !profile.email) {
+            throw new UnauthorizedException('Invalid Google profile data');
+        }
+            
+        let user = await this.userRepository.findByEmail(profile.email);
+        
+        if (!user) {
+            // Create new user if doesn't exist
+            user = await this.userRepository.create({
+                email: profile.email,
+                googleId: profile.googleId,
+                isGoogleAccount: true,
+                password: await PasswordUtil.hash(Math.random().toString(36))
+            });
+        }
+    
+        return {
+            user: {
+                id: user.id,
+                email: user.email
+            },
+            access_token: this.jwtService.sign({ 
+                email: user.email, 
+                sub: user.id 
+            })
+        };
+    }
+
 }
