@@ -10,6 +10,7 @@ import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import Logo from '../../assets/mainLogo.png';
 import GoogleButton from "../../components/common/GoogleButton";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -17,27 +18,9 @@ const LoginPage = () => {
   const [loginError, setLoginError] = useState<string>('');
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const [searchParams] = useSearchParams();
-    const hasCheckedAuth = useRef(false);
+  useGoogleAuth();
 
-    useEffect(() => {
-        const checkGoogleAuth = async () => {
-            if (!hasCheckedAuth.current && searchParams.has('fromGoogle')) {
-                try {
-                    const response = await authService.getCurrentUser();
-                    if (response.data) {
-                        login({ email: response.data.email });
-                        navigate('/contacts');
-                    }
-                } catch (error) {
-                    console.log('Not authenticated via Google:', error);
-                }
-                hasCheckedAuth.current = true;
-            }
-        };
 
-        checkGoogleAuth();
-    }, [login, navigate, searchParams]);
 
   const {
     register,
@@ -70,7 +53,7 @@ const LoginPage = () => {
   const handleGoogleLogin = () => {
     setIsGoogleLoading(true);
     authService.googleLogin();
-  };
+};
 
   return (
     // <div className="background_login">
