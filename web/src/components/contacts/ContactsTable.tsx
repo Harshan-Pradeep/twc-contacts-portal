@@ -10,7 +10,7 @@ type ContactsTableProps = {
   onEdit: (contact: Contact) => void;
   onSave: () => void;
   onCancel: () => void;
-  onDelete: (id: number) => void;
+  onDelete: (contact: Contact) => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: keyof Contact) => void;
 }
 
@@ -57,7 +57,6 @@ const ContactsTable: React.FC<ContactsTableProps> = ({
   };
 
   return (
-    // CHANGE: Simplified div structure while maintaining necessary classes
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
       <table className="w-full text-sm text-left text-[#083F46]">
         <thead className="text-[#083F46] bg-white">
@@ -72,14 +71,12 @@ const ContactsTable: React.FC<ContactsTableProps> = ({
         <tbody>
           {contacts.map((contact) => (
             <tr key={contact.id} className="hover:bg-gray-50">
-              {/* CHANGE: Using renderEditableField function instead of repeated code */}
               <td className="px-6 py-4">{renderEditableField(contact, 'fullName')}</td>
               <td className="px-6 py-4">{renderEditableField(contact, 'gender')}</td>
               <td className="px-6 py-4">{renderEditableField(contact, 'email', 'email')}</td>
               <td className="px-6 py-4">{renderEditableField(contact, 'phoneNumber')}</td>
               <td className="px-6 py-4">
                 <div className="flex space-x-4">
-                  {/* CHANGE: Simplified button structure and removed image imports */}
                   {editingId === contact.id ? (
                     <>
                       <button
@@ -100,7 +97,7 @@ const ContactsTable: React.FC<ContactsTableProps> = ({
                       <img src={EditIcon} alt="Edit" width={23} height={24} />
                     </button>
                   )}
-                  <button onClick={() => onDelete(contact.id)}>
+                  <button onClick={() => onDelete(contact)}>
                     <img src={DeleteIcon} alt="Edit" width={23} height={24} />
                   </button>
                 </div>

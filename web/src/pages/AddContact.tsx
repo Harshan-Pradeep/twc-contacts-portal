@@ -19,7 +19,7 @@ const REDIRECT_DELAY = 2;
 
 const AddContact = () => {
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { logout } = useAuth();
     
     const [submission, setSubmission] = useState({
         isSuccess: false,
