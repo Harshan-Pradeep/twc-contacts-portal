@@ -1,17 +1,17 @@
-import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
+import { ContactFormData } from '../../types/contact.types';
 
-interface RadioOption {
+type RadioOption = {
   label: string;
   value: string;
 }
 
 interface RadioGroupProps {
   label: string;
-  name: string;
+  name: keyof ContactFormData;
   options: RadioOption[];
   error?: string;
-  register: UseFormRegister<any>;
+  register: UseFormRegister<ContactFormData>;
 }
 
 const RadioGroup = ({ label, name, options, error, register }: RadioGroupProps) => {

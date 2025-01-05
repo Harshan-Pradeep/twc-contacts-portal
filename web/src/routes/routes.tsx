@@ -7,7 +7,6 @@ import AddContact from '../pages/AddContact';
 import ContactsPage from '../pages/ContactsPage';
 import HomePage from '../pages/HomePage';
 
-// Public routes (no auth required)
 export const publicRoutes: RouteObject[] = [
   {
     path: '/login',
@@ -19,7 +18,6 @@ export const publicRoutes: RouteObject[] = [
   }
 ];
 
-// Protected routes (auth required)
 export const protectedRoutes: RouteObject[] = [
   {
     path: '/',

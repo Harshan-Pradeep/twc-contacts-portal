@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
-import { publicRoutes, protectedRoutes } from './config/routes';
+import { publicRoutes, protectedRoutes } from './routes/routes';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false, // disable automatic refetch on window focus
-      retry: 1, // retry failed queries once
+      refetchOnWindowFocus: false,
+      retry: 1,
     },
   },
 });
@@ -18,7 +18,6 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Public Routes */}
             {publicRoutes.map((route) => (
               <Route
                 key={route.path}
@@ -26,8 +25,6 @@ function App() {
                 element={route.element}
               />
             ))}
-
-            {/* Protected Routes */}
             {protectedRoutes.map((route) => (
               <Route
                 key={route.path}
