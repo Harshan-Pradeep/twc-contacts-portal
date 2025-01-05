@@ -5,10 +5,20 @@ import { useAuth } from '../context/AuthContext';
 import Logo from '../assets/secondaryLogo.png';
 import LogoutIcon from '../assets/bx_log-out-circle.svg';
 import { useContacts } from '../hooks/useContacts';
+import { useState } from 'react';
+import PopupModel from '../components/common/PopupModel';
 
 const ContactsPage = () => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const [popup, setPopup] = useState<{
+        isVisible: boolean;
+        type: 'delete' | 'deleteSuccess' | 'saveSuccess';
+        contactToDelete?: { id: number; name: string };
+    }>({
+        isVisible: false,
+        type: 'delete',
+    });
 
     const {
         contacts,
@@ -22,6 +32,37 @@ const ContactsPage = () => {
         handleDelete,
         handleInputChange,
     } = useContacts();
+
+    const handleDeleteClick = (contact: { id: number; fullName: string }) => {
+        setPopup({
+            isVisible: true,
+            type: 'delete',
+            contactToDelete: { id: contact.id, name: contact.fullName }
+        });
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (popup.contactToDelete) {
+            const success = await handleDelete(popup.contactToDelete.id);
+            if (success) {
+                setPopup({ isVisible: true, type: 'deleteSuccess' });
+            }
+        }
+    };
+
+    const handleSaveClick = async () => {
+        const success = await handleSave();
+        if (success) {
+            setPopup({ isVisible: true, type: 'saveSuccess' });
+        }
+    };
+
+    const handlePopupClose = () => {
+        setPopup(prev => ({
+            isVisible: false,
+            type: prev.type
+        }));
+    };
 
     if (isLoading) {
         return (
@@ -64,9 +105,9 @@ const ContactsPage = () => {
                             editingId={editingId}
                             editedContact={editedContact}
                             onEdit={handleEdit}
-                            onSave={handleSave}
+                            onSave={handleSaveClick}
                             onCancel={handleCancel}
-                            onDelete={handleDelete}
+                            onDelete={handleDeleteClick}
                             onInputChange={handleInputChange}
                         />
                     </div>
@@ -84,6 +125,13 @@ const ContactsPage = () => {
                     Logout
                 </span>
             </button>
+            <PopupModel
+                isVisible={popup.isVisible}
+                type={popup.type}
+                contactName={popup.contactToDelete?.name}
+                onConfirm={popup.type === 'delete' ? handleDeleteConfirm : handlePopupClose}
+                onCancel={handlePopupClose}
+            />
         </main>
     );
 };

@@ -40,7 +40,6 @@ export const useContacts = () => {
     },
   });
 
-  // Helper functions for managing edit state
   const handleEdit = (contact: Contact) => {
     setEditingId(contact.id);
     setEditedContact(contact);
@@ -50,8 +49,10 @@ export const useContacts = () => {
     if (editedContact) {
       try {
         await updateContact.mutateAsync(editedContact);
+        return true;
       } catch (error) {
         console.error('Error updating contact:', error);
+        return false;
       }
     }
   };
@@ -62,13 +63,13 @@ export const useContacts = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Are you sure you want to delete this contact?')) {
       try {
         await deleteContact.mutateAsync(id);
+        return true; 
       } catch (error) {
         console.error('Error deleting contact:', error);
+        return false;
       }
-    }
   };
 
   const handleInputChange = (
