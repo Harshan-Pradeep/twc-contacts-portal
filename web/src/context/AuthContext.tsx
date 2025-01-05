@@ -1,16 +1,15 @@
 import React, { createContext, useContext, useState } from "react";
 
-interface User {
+type User = {
   email: string;
 }
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
   login: (userData: User) => void;
   logout: () => void;
 }
 
-// Export the context
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {

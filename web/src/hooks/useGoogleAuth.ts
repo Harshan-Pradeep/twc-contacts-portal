@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { authService } from '../services/authService';
-import { useAuth } from './useAuth';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AxiosResponse } from 'axios';
-import { User } from '../types/auth.types';
 
 export const useGoogleAuth = () => {
     const { login } = useAuth();

@@ -8,12 +8,4 @@ const api = axios.create({
   },
 });
 
-// Add response interceptor for error handling
-api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
-  
-  export default api;
+export default api;
