@@ -22,7 +22,16 @@ export const contactService = {
   },
 
   updateContact: async (id: number, contact: ContactFormData) => {
-    const response = await api.put<Contact>(`/contacts/${id}`, contact);
+    const filteredContact: ContactFormData = {
+      fullName: contact.fullName,
+      email: contact.email,
+      phoneNumber: contact.phoneNumber,
+      gender: contact.gender,
+    };
+  
+    console.log("Filtered update data", filteredContact);
+  
+    const response = await api.put<Contact>(`/contacts/${id}`, filteredContact);
     return response.data;
   },
 
