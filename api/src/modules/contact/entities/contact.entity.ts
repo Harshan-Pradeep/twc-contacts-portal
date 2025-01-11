@@ -30,10 +30,10 @@ export class Contact {
     @Column()
     userId: number;
 
-    @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamp', update: false })
     createdAt: Date;
 
-    @UpdateDateColumn({ type: 'timestamp' })
+    @UpdateDateColumn({ type: 'timestamp', update: true })
     updatedAt: Date;
 
     @ManyToOne(() => User)
