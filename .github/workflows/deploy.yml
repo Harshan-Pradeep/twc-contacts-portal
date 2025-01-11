@@ -55,7 +55,7 @@ jobs:
       - name: Create frontend env .env file
         run: |
           cat << EOF > ./web/.env
-          BASE_URL=${{vars.BACKEND_URL}}
+          BASE_URL=http://api:3003
 
       - name: Build and push API image
         uses: docker/build-push-action@v2
