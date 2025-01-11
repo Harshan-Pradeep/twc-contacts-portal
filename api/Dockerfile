@@ -10,8 +10,6 @@ COPY . .
 
 RUN npm run build
 
-COPY .env .env
-
 EXPOSE 3003
 
 HEALTHCHECK --interval=30s --timeout=3s \
