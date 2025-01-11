@@ -8,10 +8,6 @@ import {
   import { validate } from 'class-validator';
   import { plainToClass } from 'class-transformer';
   
-  /**
-   * Custom validation pipe that provides detailed error messages
-   * and transforms incoming data to DTO classes
-   */
   @Injectable()
   export class CustomValidationPipe implements PipeTransform<any> {
     async transform(value: any, { metatype }: ArgumentMetadata) {

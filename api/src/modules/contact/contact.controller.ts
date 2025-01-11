@@ -35,10 +35,6 @@ import { CreateContactDto } from './dto/contact.dto';
 import { ContactResponseDto } from './dto/contact-response.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 
-/**
- * Controller handling all contact-related operations
- * Requires authentication for all endpoints
- */
 @ApiTags('Contacts')
 @Controller('contacts')
 @UseGuards(JwtAuthGuard)
@@ -48,9 +44,6 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 export class ContactController {
     constructor(private readonly contactService: ContactService) {}
 
-    /**
-     * Create a new contact
-     */
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({ summary: 'Create a new contact', description: 'Creates a new contact for the authenticated user' })
@@ -72,9 +65,7 @@ export class ContactController {
         return await this.contactService.create(createContactDto, req.user.id);
     }
 
-    /**
-     * Get all contacts for the authenticated user
-     */
+
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ 
@@ -90,9 +81,7 @@ export class ContactController {
         return await this.contactService.findAll(req.user.id);
     }
 
-    /**
-     * Get a specific contact by ID
-     */
+
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ 
@@ -117,9 +106,7 @@ export class ContactController {
         return await this.contactService.findOne(id, req.user.id);
     }
 
-    /**
-     * Update an existing contact
-     */
+
     @Put(':id')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ 
@@ -146,9 +133,7 @@ export class ContactController {
         return await this.contactService.update(id, req.user.id, updateContactDto);
     }
 
-    /**
-     * Delete a contact
-     */
+
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ 

@@ -1,4 +1,3 @@
-// src/contact/repositories/contact.repository.ts
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { IContactRepository } from './contact.respository.interface';
@@ -39,7 +38,6 @@ export class ContactRepository implements IContactRepository {
             throw new NotFoundException('Contact not found');
         }
 
-        // Update the contact
         Object.assign(contact, contactData);
         return await this.repository.save(contact);
     }

@@ -1,6 +1,5 @@
 import { Contact } from "../entities/contact.entity";
 
-
 export interface IContactRepository {
     create(contact: Partial<Contact>): Promise<Contact>;
     findById(id: number): Promise<Contact | null>;

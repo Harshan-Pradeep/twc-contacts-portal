@@ -7,9 +7,6 @@ import {
   import { Observable } from 'rxjs';
   import { map } from 'rxjs/operators';
   
-  /**
-   * Interface for the standardized response format
-   */
   export interface Response<T> {
     data: T;
     metadata: {
@@ -19,10 +16,6 @@ import {
     };
   }
   
-  /**
-   * Global interceptor for transforming responses into a standard format
-   * Wraps all successful responses with metadata
-   */
   @Injectable()
   export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     intercept(

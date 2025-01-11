@@ -26,10 +26,6 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { ResponseInterceptor } from 'src/common/interceptors/response.interceptor';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 
-/**
- * Controller handling authentication-related endpoints
- * Manages user registration, login, logout, and profile retrieval
- */
 @ApiTags('Authentication')
 @Controller('auth')
 @UseInterceptors(ResponseInterceptor, LoggingInterceptor)
@@ -42,11 +38,6 @@ export class AuthController {
         private readonly cookieService: CookieService,
     ) { }
 
-    /**
-     * Register a new user
-     * @param registerDto User registration data
-     * @param res Express response object
-     */
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({ summary: 'Register a new user' })
@@ -71,12 +62,6 @@ export class AuthController {
         return AuthTransformer.toResponse(user);
     }
 
-    /**
-     * Login existing user
-     * @param loginDto User login credentials
-     * @param req Express request object
-     * @param res Express response object
-     */
     @Post('login')
     @HttpCode(HttpStatus.OK)
     @UseGuards(LocalAuthGuard)
@@ -98,10 +83,6 @@ export class AuthController {
         return AuthTransformer.toResponse(user);
     }
 
-    /**
-     * Logout current user
-     * @param res Express response object
-     */
     @Post('logout')
     @HttpCode(HttpStatus.OK)
     @UseGuards(JwtAuthGuard)
@@ -114,10 +95,6 @@ export class AuthController {
         return { message: 'Logged out successfully' };
     }
 
-    /**
-     * Get current user's profile
-     * @param req Express request object
-     */
     @Get('profile')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -144,7 +121,6 @@ async googleAuthCallback(@Req() req, @Res() res: Response) {
         const result = await this.authService.googleLogin(req.user);
         this.cookieService.setToken(res, result.access_token);
         
-        // Add fromGoogle parameter
         return res.redirect(`${process.env.FRONTEND_URL}/login?fromGoogle=true`);
     } catch (error) {
         return res.redirect(`${process.env.FRONTEND_URL}/login?error=authentication_failed`);

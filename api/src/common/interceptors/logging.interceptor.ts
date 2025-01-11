@@ -1,5 +1,3 @@
-// src/common/interceptors/logging.interceptor.ts
-
 import {
     Injectable,
     NestInterceptor,
@@ -11,10 +9,6 @@ import {
   import { tap } from 'rxjs/operators';
   import { Request, Response } from 'express';
   
-  /**
-   * Global interceptor for logging requests and responses
-   * Measures request processing time and logs request/response details
-   */
   @Injectable()
   export class LoggingInterceptor implements NestInterceptor {
     private readonly logger = new Logger('HTTP');
@@ -26,7 +20,6 @@ import {
       const requestTime = Date.now();
       const { method, originalUrl, body, params, query } = request;
   
-      // Log request
       this.logger.log(
         `Incoming Request - ${method} ${originalUrl}
         Body: ${JSON.stringify(body)}
@@ -39,7 +32,6 @@ import {
           next: (data: any) => {
             const responseTime = Date.now() - requestTime;
             
-            // Log response
             this.logger.log(
               `Outgoing Response - ${method} ${originalUrl}
               Status: ${response.statusCode}
@@ -50,7 +42,6 @@ import {
           error: (error: any) => {
             const responseTime = Date.now() - requestTime;
             
-            // Log error
             this.logger.error(
               `Request Failed - ${method} ${originalUrl}
               Status: ${error.status}
