@@ -33,6 +33,8 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
       - FRONTEND_URL=http://frontend:5173
+      - DEMO_USER_EMAIL=${DEMO_USER_EMAIL}
+      - DEMO_USER_PASSWORD=${DEMO_USER_PASSWORD}
     depends_on:
       database:
         condition: service_healthy

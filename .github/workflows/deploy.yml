@@ -18,6 +18,9 @@ env:
   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
   GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
+  DEMO_USER_PASSWORD: ${{secrets.DEMO_USER_PASSWORD}}
+  DEMO_USER_EMAIL: ${{vars.DEMO_USER_EMAIL}}
+  FRONTEND_URL: ${{vars.FRONTEND_URL}}
   NODE_ENV: production
 
 jobs:
@@ -62,6 +65,9 @@ jobs:
           GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}
+          DEMO_USER_PASSWORD: ${{secrets.DEMO_USER_PASSWORD}}
+          DEMO_USER_EMAIL: ${{vars.DEMO_USER_EMAIL}}
+          FRONTEND_URL: ${{vars.FRONTEND_URL}}
           NODE_ENV=production
           EOF
 
