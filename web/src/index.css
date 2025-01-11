@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+      font-family: "FutuBold";
+      src: url("/fonts/FutuBold.ttf");
+    }
+    @font-face {
+      font-family: "FutuLight";
+      src: url("/fonts/FutuLight.ttf");
+    }
+  }
+  
+
+@layer components{
+    .input-field {
+        @apply flex h-[55px]  items-center rounded-[50px] bg-white py-[3px] pl-[41px]  xl:max-w-[477px] 2xl:max-w-none;
+      }
+
+    .background_home {
+        background-image: url("/img/background/Ellipse\ 1.svg"),
+          url("/img/background/contact-us-customer-service-sketch-doodle-icons-seamless-pattern-vector-illustration-2JB18KT\ 1.svg"),
+          url("/img/background/contact-us-customer-service-sketch-doodle-icons-seamless-pattern-vector-illustration-2JB18KT\ 2.svg");
+        background-position: center center, top right, bottom left;
+        background-repeat: no-repeat, no-repeat, no-repeat;
+        background-size: cover, 15%, 14%;
+      }
+      
+      .background_login {
+        background-image: url("/img/background/contact-us-customer-service-sketch-doodle-icons-seamless-pattern-vector-illustration-2JB18KT\ 3.svg");
+        background-repeat: repeat;
+      }
+      
+      .background_login_eclipse {
+        background-image: url("/img/background/Ellipse\ 2.svg");
+        background-position: left center;
+        background-repeat: no-repeat;
+        background-size: 100%;
+      }
+}

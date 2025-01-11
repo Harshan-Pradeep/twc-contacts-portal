@@ -1,0 +1,97 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+  DO_HOST: ${{ secrets.DO_HOST }}
+  DO_USERNAME: ${{ secrets.DO_USERNAME }}
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  GOOGLE_CALLBACK_URL: ${{ secrets.GOOGLE_CALLBACK_URL }}
+  NODE_ENV: production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./api
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/twc-contacts-portal-api:latest
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./web
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/twc-contacts-portal-web:latest
+
+      - name: Create deployment directory
+        run: |
+          mkdir -p deployment
+          cp docker-compose.yml deployment/
+          
+      - name: Create .env file
+        run: |
+          cat << EOF > deployment/.env
+          MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}
+          NODE_ENV=production
+          EOF
+
+      - name: Update docker-compose.yml for production
+        run: |
+          sed -i 's|build:|image: ${{ secrets.DOCKER_HUB_USERNAME }}/twc-contacts-portal-api:latest|' deployment/docker-compose.yml
+          sed -i 's|context: ./api||' deployment/docker-compose.yml
+          sed -i 's|dockerfile: Dockerfile||' deployment/docker-compose.yml
+          sed -i 's|build:|image: ${{ secrets.DOCKER_HUB_USERNAME }}/twc-contacts-portal-web:latest|' deployment/docker-compose.yml
+          sed -i 's|context: ./web||' deployment/docker-compose.yml
+          sed -i 's|dockerfile: Dockerfile||' deployment/docker-compose.yml
+
+      - name: Copy files to DigitalOcean
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "deployment/*"
+          target: "/root/twc-contacts-portal"
+          strip_components: 1
+
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/twc-contacts-portal
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
