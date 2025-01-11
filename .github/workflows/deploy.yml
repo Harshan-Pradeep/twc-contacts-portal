@@ -36,6 +36,27 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      - name: Create .env file
+        run: |
+          cat << EOF > ./api/.env
+          MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}
+          DEMO_USER_PASSWORD: ${{secrets.DEMO_USER_PASSWORD}}
+          DEMO_USER_EMAIL: ${{vars.DEMO_USER_EMAIL}}
+          FRONTEND_URL: ${{vars.FRONTEND_URL}}
+          NODE_ENV=production
+          EOF
+
+      - name: Create frontend env .env file
+        run: |
+          cat << EOF > ./web/.env
+          BASE_URL=${{vars.BACKEND_URL}}
+
       - name: Build and push API image
         uses: docker/build-push-action@v2
         with:
@@ -55,23 +76,6 @@ jobs:
           mkdir -p deployment
           cp docker-compose.yml deployment/
           
-      # - name: Create .env file
-      #   run: |
-      #     cat << EOF > deployment/.env
-      #     MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
-      #     MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-      #     MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-      #     JWT_SECRET=${{ secrets.JWT_SECRET }}
-      #     GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-      #     GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-      #     GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}
-      #     DEMO_USER_PASSWORD: ${{secrets.DEMO_USER_PASSWORD}}
-      #     DEMO_USER_EMAIL: ${{vars.DEMO_USER_EMAIL}}
-      #     FRONTEND_URL: ${{vars.FRONTEND_URL}}
-      #     BASE_URL
-      #     NODE_ENV=production
-      #     EOF
-
       - name: Update docker-compose.yml for production
         run: |
           sed -i 's|build:|image: ${{ secrets.DOCKER_HUB_USERNAME }}/twc-contacts-portal-api:latest|' deployment/docker-compose.yml
