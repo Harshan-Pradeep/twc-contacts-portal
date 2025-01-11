@@ -10,7 +10,7 @@ services:
     depends_on:
       - api
     environment:
-      - VITE_API_URL=http://api:3003
+      - BASE_URL=http://64.227.189.106:5173
     networks:
       - app-network
 
@@ -32,7 +32,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
-      - FRONTEND_URL=http://frontend:5173
+      - FRONTEND_URL=http://web:5173
       - DEMO_USER_EMAIL=${DEMO_USER_EMAIL}
       - DEMO_USER_PASSWORD=${DEMO_USER_PASSWORD}
     depends_on:
