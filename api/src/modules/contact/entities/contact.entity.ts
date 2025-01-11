@@ -27,7 +27,6 @@ export class Contact {
     })
     gender: Gender;
 
-    // Add userId column for normalization
     @Column()
     userId: number;
 
@@ -38,6 +37,6 @@ export class Contact {
     updatedAt: Date;
 
     @ManyToOne(() => User)
-    @JoinColumn({ name: 'userId' }) // This specifies which column to use for the relationship
+    @JoinColumn({ name: 'userId' })
     user: User;
 }

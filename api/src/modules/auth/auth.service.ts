@@ -1,11 +1,8 @@
 import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepositoy } from './repositories/user.repository';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { subscribe } from 'diagnostics_channel';
 import { User } from './entities/user.entity';
 import { PasswordUtil } from 'src/common/utils/password.util';
-import { resourceLimits } from 'worker_threads';
 
 @Injectable()
 export class AuthService {
@@ -83,7 +80,6 @@ export class AuthService {
         let user = await this.userRepository.findByEmail(profile.email);
         
         if (!user) {
-            // Create new user if doesn't exist
             user = await this.userRepository.create({
                 email: profile.email,
                 googleId: profile.googleId,

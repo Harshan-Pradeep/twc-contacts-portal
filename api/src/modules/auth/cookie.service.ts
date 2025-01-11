@@ -1,8 +1,5 @@
-// src/auth/services/cookie.service.ts
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
-import { cookieConfig } from 'src/config/cookie.config';
-
 
 @Injectable()
 export class CookieService {
@@ -10,7 +7,7 @@ export class CookieService {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict' as const,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        maxAge: 24 * 60 * 60 * 1000,
         path: '/',
     };
 

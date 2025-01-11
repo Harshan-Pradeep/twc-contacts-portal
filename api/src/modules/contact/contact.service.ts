@@ -16,13 +16,6 @@ export class ContactService {
         private readonly contactRepository: IContactRepository,
     ) {}
 
-    /**
-     * Creates a new contact
-     * @param createContactDto The contact data
-     * @param userId The ID of the user creating the contact
-     * @returns The created contact
-     * @throws ContactExistsException if a contact with the same email exists
-     */
     async create(createContactDto: CreateContactDto, userId: number): Promise<Contact> {
         this.logger.log(`Creating contact for user ${userId}`);
         
@@ -45,23 +38,11 @@ export class ContactService {
         return contact;
     }
 
-    /**
-     * Retrieves all contacts for a user
-     * @param userId The ID of the user
-     * @returns Array of contacts
-     */
     async findAll(userId: number): Promise<Contact[]> {
         this.logger.log(`Retrieving all contacts for user ${userId}`);
         return await this.contactRepository.findByUserId(userId);
     }
 
-    /**
-     * Finds a specific contact
-     * @param id The contact ID
-     * @param userId The user ID
-     * @returns The found contact
-     * @throws ContactNotFoundException if contact is not found
-     */
     async findOne(id: number, userId: number): Promise<Contact> {
         this.logger.log(`Finding contact ${id} for user ${userId}`);
         
@@ -75,15 +56,6 @@ export class ContactService {
         return contact;
     }
 
-    /**
-     * Updates a contact
-     * @param id The contact ID
-     * @param userId The user ID
-     * @param updateContactDto The update data
-     * @returns The updated contact
-     * @throws ContactNotFoundException if contact is not found
-     * @throws ContactExistsException if updating to an email that exists
-     */
     async update(
         id: number, 
         userId: number, 
@@ -91,10 +63,8 @@ export class ContactService {
     ): Promise<Contact> {
         this.logger.log(`Updating contact ${id} for user ${userId}`);
 
-        // Verify ownership
         await this.findOne(id, userId);
 
-        // Check email uniqueness if email is being updated
         if (updateContactDto.email) {
             const existingContact = await this.contactRepository.findByEmail(
                 updateContactDto.email,
@@ -118,16 +88,9 @@ export class ContactService {
         return updatedContact;
     }
 
-    /**
-     * Removes a contact
-     * @param id The contact ID
-     * @param userId The user ID
-     * @throws ContactNotFoundException if contact is not found
-     */
     async remove(id: number, userId: number): Promise<void> {
         this.logger.log(`Removing contact ${id} for user ${userId}`);
         
-        // Verify ownership
         await this.findOne(id, userId);
         
         await this.contactRepository.delete(id);

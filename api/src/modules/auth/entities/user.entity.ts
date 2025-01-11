@@ -1,7 +1,7 @@
 import { Exclude } from "class-transformer";
 import { IsEmail, IsNotEmpty, MinLength } from "class-validator";
 import { Contact } from "src/modules/contact/entities/contact.entity";
-import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
