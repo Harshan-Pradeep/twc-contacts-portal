@@ -79,7 +79,7 @@ jobs:
         with:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.DO_PASSWORD }}
           source: "deployment/*"
           target: "/root/twc-contacts-portal"
           strip_components: 1
@@ -89,7 +89,7 @@ jobs:
         with:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.DO_PASSWORD }}
           script: |
             cd /root/twc-contacts-portal
             docker-compose pull
