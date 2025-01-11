@@ -10,7 +10,7 @@ services:
     depends_on:
       - api
     environment:
-      - BASE_URL=http://64.227.189.106:5173
+      - BASE_URL=http://64.227.189.106:3003
     networks:
       - app-network
 

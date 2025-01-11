@@ -1,6 +1,5 @@
 import api from './api';
 import { LoginCredentials, RegisterCredentials, User } from '../types/auth.types';
-import { BASE_URL } from '../constants';
 
 export const authService = {
   login: (credentials: LoginCredentials) => 
@@ -19,6 +18,6 @@ export const authService = {
     api.get<User>('/auth/profile'),
 
   googleLogin: () => {
-    window.location.href = `${BASE_URL}/auth/google`;
+    window.location.href = `/auth/google`;
   }
 };
