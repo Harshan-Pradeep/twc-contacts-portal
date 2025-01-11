@@ -1,3 +1,5 @@
+import { ContactSeeder } from 'src/common/database/seeders/contact.seeder';
+import { UserSeeder } from 'src/common/database/seeders/user.seeder';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const getDatabaseConfig = (): DataSourceOptions => ({
@@ -20,6 +22,13 @@ export const databaseProviders = [
         const dataSource = new DataSource(getDatabaseConfig());
         const connection = await dataSource.initialize();
         console.log('Database connection established');
+
+        const userSeeder = new UserSeeder(connection);
+        await userSeeder.seed();
+
+        const contactSeeder = new ContactSeeder(connection);
+        await contactSeeder.seed();
+                
         return connection;
       } catch (error) {
         console.error('Database connection failed:', error);
