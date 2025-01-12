@@ -26,7 +26,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { ResponseInterceptor } from 'src/common/interceptors/response.interceptor';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 
-@ApiTags('Authentication')
+@ApiTags('Authentication APIs')
 @Controller('auth')
 @UseInterceptors(ResponseInterceptor, LoggingInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
