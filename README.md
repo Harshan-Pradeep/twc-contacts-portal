@@ -1,5 +1,5 @@
 # twc-contacts-portal
-A full-stack contact management application built with React, Nest.js. The application features secure authentication, CRUD operations for contacts.
+A full-stack contact management application built with React, Nest.js. The application features secure authentication, CRUD operations for contacts and deployed with DigitalOcean.
 
 ## Features
 
@@ -42,9 +42,10 @@ A full-stack contact management application built with React, Nest.js. The appli
 
 ```
 twc-contacts-portal/
-├── api/                # NestJS backend
-├── web/                # React frontend
-├── docker-compose.yml
+├── api/                          # NestJS backend
+├── web/                          # React frontend
+├── docker-compose.yml            # Docker Compose configuration
+├── .github/workflows/deploy.yml  # GitHub Actions workflow
 └── README.md
 ```
 
@@ -96,12 +97,28 @@ npm install
 # Configure your .env file
 npm run dev
 ```
+## Deployment Process
+
+1. Push your changes to the main branch
+2. GitHub Actions will automatically:
+
+    - Build Docker images
+    - Push images to Docker Hub
+    - Deploy to DigitalOcean
+
+## Production Application Access
+```
+http://64.227.189.106     # Main application interface
+
+```
 
 ## API Documentation
 
 The API documentation is available via Swagger UI at:
 ```
-http://localhost:3003/api-docs/#/
+http://localhost:3003/api-docs/#/       #Development
+http://64.227.189.106:3003/api-docs/#/  # Production
+
 ```
 
 ## Development
