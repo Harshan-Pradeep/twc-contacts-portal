@@ -31,7 +31,6 @@ A full-stack contact management application built with React, Nest.js. The appli
 - NestJS framework
 - MySQL database
 - Swagger for API documentation
-- Jest for unit testing
 
 ## Prerequisites
 
