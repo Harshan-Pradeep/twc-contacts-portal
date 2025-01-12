@@ -35,7 +35,7 @@ import { CreateContactDto } from './dto/contact.dto';
 import { ContactResponseDto } from './dto/contact-response.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 
-@ApiTags('Contacts')
+@ApiTags('Contacts APIs')
 @Controller('contacts')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()

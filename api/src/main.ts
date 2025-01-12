@@ -20,8 +20,8 @@ async function bootstrap() {
   }));
 
   const config = new DocumentBuilder()
-    .setTitle('Auth Service API')
-    .setDescription('This API allows cookie based Authentication and Authorization')
+    .setTitle('TWC Contact Porta;')
+    .setDescription('This appliction allows CRUD operations for contacts')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
