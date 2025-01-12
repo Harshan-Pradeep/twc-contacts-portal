@@ -1,5 +1,6 @@
 import api from './api';
 import { LoginCredentials, RegisterCredentials, User } from '../types/auth.types';
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const authService = {
   login: (credentials: LoginCredentials) => 
@@ -18,6 +19,6 @@ export const authService = {
     api.get<User>('/auth/profile'),
 
   googleLogin: () => {
-    window.location.href = `/auth/google`;
+    window.location.href = `${VITE_BASE_URL}/auth/google`;
   }
 };
