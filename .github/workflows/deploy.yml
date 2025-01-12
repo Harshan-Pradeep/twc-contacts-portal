@@ -58,7 +58,7 @@ jobs:
       - name: Create frontend .env file
         run: |
           cat << EOF > ./web/.env
-          VITE_BASE_URL=http://api:3003
+          VITE_BASE_URL=http://64.227.189.106:3003
           EOF
 
       - name: Set up Docker Buildx
