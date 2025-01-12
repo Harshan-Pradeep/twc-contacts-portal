@@ -87,6 +87,23 @@ jobs:
           mkdir -p deployment
           cp docker-compose.yml deployment/
 
+      - name: Create .env file for deployment
+        run: |
+          cat << EOF > deployment/.env
+          DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+          MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}
+          DEMO_USER_PASSWORD=${{ secrets.DEMO_USER_PASSWORD }}
+          DEMO_USER_EMAIL=${{ vars.DEMO_USER_EMAIL }}
+          FRONTEND_URL=${{ vars.FRONTEND_URL }}
+          NODE_ENV=production
+          EOF
+
       - name: Update docker-compose.yml for production
         run: |
           sed -i 's|build:|image: ${{ secrets.DOCKER_HUB_USERNAME }}/twc-contacts-portal-api:latest|' deployment/docker-compose.yml
@@ -127,6 +144,7 @@ jobs:
 
             # Deploy application
             cd /root/twc-contacts-portal
+            export $(cat .env | xargs)  # Load environment variables
             docker-compose pull
             docker-compose down
             docker-compose up -d
