@@ -8,7 +8,7 @@ services:
     depends_on:
       - api
     environment:
-      - VITE_BASE_URL=http://api:3003
+      - VITE_BASE_URL=http://64.227.189.106:3003
     restart: always
     networks:
       - app-network
