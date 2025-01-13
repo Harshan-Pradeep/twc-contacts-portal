@@ -143,7 +143,7 @@ const LoginPage = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-2/5 h-full order-first lg:order-2 flex shrink-1 justify-center items-center">
+        <div className="w-full lg:w-2/5 h-2/5 order-first lg:order-2 flex shrink-1 justify-center items-center pt-56">
           <img src={Logo} alt="Logo" />
         </div>
       </section>
